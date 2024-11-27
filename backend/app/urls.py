@@ -1,6 +1,14 @@
 from django.urls import path
-from .views import MessageListView
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+from .views import *
 
 urlpatterns = [
-    path('messages/', MessageListView.as_view(), name='message-list'),
+    path('register/', RegisterView.as_view(), name='register'),
+    path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+     path('get-csrf-token/', get_csrf_token),
+         path('login/' , login )
 ]

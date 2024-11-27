@@ -1,10 +1,13 @@
 from django.db import models
-from django.contrib.auth.models import User  # Dacă vrei să asociezi un utilizator cu mesajul
+#from django.contrib.auth.models import User  # Dacă vrei să asociezi un utilizator cu mesajul
+#from django.contrib.auth.models import AbstractUser
+from django.db import models
+from django.conf import settings  # Import corect pentru AUTH_USER_MODEL
 
-class Message(models.Model):
-    content = models.TextField()  # Textul mesajului
-    sender = models.ForeignKey(User, on_delete=models.CASCADE)  # Utilizatorul care trimite mesajul
-    created_at = models.DateTimeField(auto_now_add=True)  # Data și ora creării mesajului
+#class Message(models.Model):
+   #sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    
 
-    def __str__(self):
-        return f"{self.sender.username}: {self.content[:20]}..."  # Reprezentare scurtă a mesajului
+#class CustomUser(AbstractUser):
+  #  email = models.EmailField(unique=True)
+

@@ -4,26 +4,26 @@
         <div class="column is-8 is-offset-2 register">
           <div class="columns">
             <div class="column left">
-              <h1 class="title is-1">Super Cool Website</h1>
+              <h1 class="title is-1">SkyLink Chat</h1>
               <h2 class="subtitle colored is-4">Lorem ipsum dolor sit amet.</h2>
               <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Corporis ex deleniti aliquam tempora libero excepturi vero soluta odio optio sed.</p>
             </div>
             <div class="column right has-text-centered">
               <h1 class="title is-4">Sign up today</h1>
               <p class="description">Lorem ipsum dolor, sit amet consectetur adipisicing elit</p>
-              <form>
+              <form @submit.prevent = "login">
                 <div class="field">
                   <div class="control">
-                    <input class="input is-medium" type="text" placeholder="Name">
+                    <input v-model="email" placeholder="Email" type="email" required />
                   </div>
                 </div>
 
                 <div class="field">
                   <div class="control">
-                    <input class="input is-medium" type="email" placeholder="Email">
+                    <input v-model="password" placeholder="Password" type="password" required />
                   </div>
                 </div>
-                <button class="button is-block is-primary is-fullwidth is-medium">Submit</button>
+                <button type="submit" class="button is-block is-primary is-fullwidth is-medium">Submit</button>
                 <br />
                 <small><em>Lorem ipsum dolor sit amet consectetur.</em></small>
               </form>
@@ -64,12 +64,59 @@
 </template>
 
 <script>
+//export default {
+  //name: 'HelloWorld',
+  //props: {
+  //  msg: String
+  //}
+//}
+
+import axios from '@/api/axios';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
-  }
-}
+  name: 'UserLogin',
+  //data() {
+   // return {
+    //  username:ref(''),
+    //  password: ref(''),
+   // };
+  //},
+  setup() {
+    const email = ref(''); // define username as ref
+    const password = ref(''); // define password as ref
+
+    const router = useRouter();
+    console.log(email)
+    console.log(password)
+    const login = async () => {
+      // Simplified example for auth 
+      try {
+        // Trimite cererea POST către serverul Django
+        const response = await axios.post('/login/', {
+          email: email.value,
+          password: password.value,
+        });
+
+        // Dacă autentificarea este cu succes
+        if (response.data.token) {
+          localStorage.setItem('access_token', response.data.token); // Salvăm token-ul
+          console.log('Succesfully Logged!');
+          router.push('/chat'); // Redirecționează către /chat
+        } else {
+          alert('Invalid credentials');
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        alert('Invalid credentials');
+      }
+    };
+
+    return { email , password , login };
+  },
+};
+
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

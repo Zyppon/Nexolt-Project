@@ -38,13 +38,32 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',  # To support logout
     'app',
     'corsheaders',
+
 ]
 
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8080", 
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8080',  # Permite cereri din aplicația Vue
+    'https://localhost:8080', # Dacă folosești HTTPS
+]
+#Rest Framework Config
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',  # Just for testing : Redirection in production
+    ),
+}
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -55,6 +74,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
 ]
 
 ROOT_URLCONF = 'project.urls'
@@ -70,6 +90,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.csrf',
             ],
         },
     },
@@ -88,7 +109,17 @@ DATABASES = {
     }
 }
 
-
+#DATABASES = {
+    #'default': {
+      #  'ENGINE': 'django.db.backends.postgresql',
+       # 'NAME': 'nume_baza_de_date',
+       # 'USER': 'zyppon',
+      #  'PASSWORD': '68247687',
+      #  'HOST': 'localhost',
+      #  'PORT': '5432',
+   # }
+#}
+#AUTH_USER_MODEL = 'app.CustomUser'
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
