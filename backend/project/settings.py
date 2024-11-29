@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'rest_framework_simplejwt.token_blacklist',  # To support logout
+    'rest_framework_simplejwt.token_blacklist',
+    'rest_framework.authtoken',  # To support logout
     'app',
     'corsheaders',
 
@@ -48,7 +49,8 @@ INSTALLED_APPS = [
 CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8080", 
+    "http://localhost:8080",
+    "http://localhost:5000",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -59,11 +61,15 @@ CSRF_TRUSTED_ORIGINS = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',  # Just for testing : Redirection in production
     ),
 }
+
+
+
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
