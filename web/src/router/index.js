@@ -1,23 +1,24 @@
-// src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router';
-import Home from '@/components/Home.vue'; // Pagină de exemplu
-import UserLogin from '@/components/Login.vue'; // Pagină de login
+import Home from '@/components/Home.vue'; 
+import Login from '@/components/Login.vue'; 
 import Register from '@/components/Register.vue';
-import Chat from '@/components/Chat.vue';
+import ChatApp from '@/components/Chat.vue';
+import Blog from '@/components/Blog.vue';
+import Contact from '@/components/Contact.vue';
+import Support from '@/components/Support.vue';
 
 const routes = [
   {
     path: '/',
     name: 'Home',
     component: Home,
-  //  meta: { requiresAuth: true }, // Această rută necesită autentificare
     meta: {title : 'Nexolt'}
   },
   {
     path: '/login',
     name: 'Login',
-    component: UserLogin,
-    meta: { requiresAuth: false }, // Login nu necesită autentificare
+    component: Login,
+    meta: { requiresAuth: false },
   },
   {
     path: '/register',
@@ -27,19 +28,31 @@ const routes = [
   },
   {
     path:'/chat',
-    name:'ChatApp',
-    component:Chat,
+    name:'Chat',
+    component:ChatApp,
     meta: {requiresAuth:true},
-   // beforeEnter:(to , from , next) => {
-    //  const token = local.Storage.getItem('acces_token')
-    //  if (token) {
-    //    next();
-    //  }else {
-    //    next('/login');
-    //  }
-   // }
+  
       
-  }
+  },
+  {
+    path: '/support',
+    name: 'Support',
+    component : Support ,
+    meta: {requiresAuth: false}
+  },
+  {
+    path: '/blog',
+    name: 'Blog',
+    component : Blog ,
+    meta: {requiresAuth: false}
+  },
+  {
+    path: '/contact',
+    name: 'Contact',
+    component : Contact ,
+    meta: {requiresAuth: false}
+  },
+
 ];
 
 const router = createRouter({
@@ -47,15 +60,21 @@ const router = createRouter({
   routes,
 });
 
-// Adaugă beforeEach pentru a verifica autentificarea
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!localStorage.getItem('access_token'); // Verifică dacă utilizatorul are un token
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    next('/login'); // Redirecționează la pagina de login
+  console.log('Navigating to:', to.name);
+  if (to.meta.requiresAuth) {
+    console.log('Checking authentication for:', to.name);
+    if (localStorage.getItem('access_token')) {
+      console.log('Access token exists, proceeding to:', to.name);
+      next(); // Allow access to the route
+    } else {
+      console.log('No access token, redirecting to Login');
+      next({ name: 'Login' }); // Redirect to Login if no token exists
+    }
   } else {
-    next(); // Permite accesul
+    console.log('No authentication required, proceeding to:', to.name);
+    next(); // Allow access to routes that do not require authentication
   }
 });
-
 
 export default router;

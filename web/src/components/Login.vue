@@ -1,5 +1,6 @@
 <template>
   <div class="login-page">
+
     <!-- Navbar --
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container">
@@ -51,17 +52,9 @@
   </div> 
 </template>
 <script>
-//export default {
-  //name: 'HelloWorld',
-  //props: {
-  //  msg: String
-  //}
-//}
-
-import axios from 'axios'; // Folosește axios pentru cereri HTTP
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-
+import axios from 'axios';
 export default {
   name: "Login",
   setup() {
@@ -72,41 +65,46 @@ export default {
     const router = useRouter();
 
     const login = async () => {
-      loading.value = true;
-      try {
-        //  Send POST request to backend for auth
+        loading.value = true;
+        try {
         const response = await axios.post('http://127.0.0.1:8000/login/', {
           email: email.value,
           password: password.value,
-        });
+        }, { withCredentials: true });
+
 
         if (response.status === 200) {
-          //  Stockage token JWT in local storage
+      // Save tokens in localStorage
           localStorage.setItem('access_token', response.data.access);
           localStorage.setItem('refresh_token', response.data.refresh);
-
+          localStorage.setItem('username', response.data.username);
           message.value = "Login successful!";
+
           setTimeout(() => {
-            router.push('/chat'); // Redirect
-          }, 1000); // 
+            router.push('/chat'); // Redirect to chat after login
+          }, 1000); // Add a timeout to allow the message to show
         }
-      } catch (error) {
-        // Errors
+        } catch (error) {
         message.value = error.response?.data?.message || 'Invalid credentials.';
         console.error(error);
+
       } finally {
         loading.value = false;
-      }
-    };
 
+      }
+
+    };
     return {
+
       email,
       password,
       message,
       loading,
       login,
     };
+
   },
+
 };
 
 </script>

@@ -25,9 +25,16 @@ SECRET_KEY = 'django-insecure-7p0#=&m4bcl2c^ilxlrtlnbwum24txs1w59k=)*bblm1a^ph(!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
+from datetime import timedelta
 
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),  # Valabilitatea tokenului de acces
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  # Valabilitatea tokenului de reîmprospătare
+    'ROTATE_REFRESH_TOKENS': True,  # Permite rotația tokenurilor de reîmprospătare
+    'BLACKLIST_AFTER_ROTATION': True,  # Blochează tokenurile vechi după rotație
+}
 # Application definition
 
 INSTALLED_APPS = [
@@ -53,10 +60,40 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5000",
 ]
 
+CORS_ALLOW_METHODS = [
+    'GET',
+    'POST',
+    'PUT',
+    'PATCH',
+    'DELETE',
+    'OPTIONS',
+]
+
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'authorization',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:8080',  # Permite cereri de la orice rută de pe acest port
+]
+
+
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_HTTPONLY = True  # Permite accesul din JS la cookie-ul CSRF
+
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8080',  # Permite cereri din aplicația Vue
     'https://localhost:8080', # Dacă folosești HTTPS
 ]
+
+CSRF_COOKIE_NAME = 'csrftoken'  # Numele cookie-ului CSRF
+CSRF_COOKIE_SECURE = False  # Setează True doar în producție (dacă folosești HTTPS)
+CSRF_COOKIE_HTTPONLY = False  # Permite accesul la cookie din JavaScript
+CSRF_COOKIE_PATH = '/'  # Asigură-te că este setat corect
+CORS_ALLOW_CREDENTIALS = True 
 #Rest Framework Config
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (

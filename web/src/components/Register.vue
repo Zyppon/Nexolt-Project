@@ -23,7 +23,7 @@
           </div>
 
           <!-- Submit Button -->
-          <button type="submit" class="btn btn-primary btn-lg">Register</button>
+          <button type="submit" :disabled="loading" class="btn btn-primary btn-lg">{{ loading.value ? 'Loading...' : 'Register' }}</button>
         </form>
 
         <!-- Message Display -->
@@ -37,9 +37,10 @@
 </template>
 
 <script>
-import axios from 'axios';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { getCsrfToken } from '@/api/axios'; // Importă funcția de CSRF din axios.js
+import axios from 'axios';  // Asigură-te că ai axios importat în fișier
 
 export default {
   name: "Register",
@@ -48,30 +49,53 @@ export default {
     const email = ref('');
     const password = ref('');
     const message = ref('');
+    const loading = ref(false);
     const router = useRouter();
 
-    const loading  = ref(false);
+    // Funcția de înregistrare
     const register = async () => {
-      loading.value = true
+      loading.value = true;
+
+      if (!username.value || !email.value || !password.value) {
+        message.value = 'All fields are required!';
+        loading.value = false;
+        return;
+      }
+
       try {
-        const response = await axios.post('http://127.0.0.1:8000/register/', {
+        // Obține CSRF token
+        const csrfToken = await getCsrfToken();
+        const data = {
           username: username.value,
           email: email.value,
           password: password.value,
+        };
+
+        // Trimite cererea POST pentru înregistrare
+        const response = await axios.post('http://localhost:8000/register/', data, {
+          headers: {
+            'X-CSRFToken': csrfToken,
+          },
+          withCredentials: true, // Permite trimiterea cookie-urilor
         });
 
         if (response.status === 201) {
           message.value = response.data.message;
           setTimeout(() => {
-            router.push('/login'); // Redirect to login page after successful registration
-          }, 1000); // Delay for message visibility
+            router.push('/login');
+          }, 1000);
         }
       } catch (error) {
-        message.value = error.response?.data?.message || 'Registration failed. Please try again.';
-        console.error(error);
-      }finally {
-        loading.value = false
-      };
+        if (error.response) {
+          console.error('Registration error response:', error.response);
+          message.value = error.response?.data?.message || 'Something went wrong. Please try again.';
+        } else {
+          console.error('Error during registration:', error);
+          message.value = 'An unexpected error occurred. Please try again.';
+        }
+      } finally {
+        loading.value = false;
+      }
     };
 
     return {
@@ -79,10 +103,12 @@ export default {
       email,
       password,
       message,
-      register
+      loading,
+      register,
     };
-  }
+  },
 };
+
 </script>
 
 <style scoped>
